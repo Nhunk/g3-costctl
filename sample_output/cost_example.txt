@@ -1,4 +1,4 @@
-Cost for Application=HealthBot over last 7 days (2026-05-14 → 2026-05-21):
+Cost for Application=HealthBot over last 7 days (YYYY-MM-DD → YYYY-MM-DD):
 ------------------------------------------------------------
   Amazon Elastic Compute Cloud - Compute        $    8.42
   Amazon Relational Database Service             $    5.18
@@ -7,5 +7,5 @@ Cost for Application=HealthBot over last 7 days (2026-05-14 → 2026-05-21):
 ------------------------------------------------------------
   TOTAL                                          $   13.80
 
-# REPLACE WITH REAL OUTPUT from running:
+# Example output (sanitized). To capture real output run:
 #   ./costctl.py cost --tag Application=<your-app> --days 7 > sample_output/cost_<your-app>_<date>.txt

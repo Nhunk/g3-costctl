@@ -1,7 +1,7 @@
 EC2 missing:Application — 2 found:
 ------------------------------------------------------------------------------
-  i-0fff111222333444a       t3.micro       running       Environment=dev Owner=team-x
-  i-0ggg555666777888b       t3.nano        stopped       (no tags)
+  i-example-004            t3.micro        running       Environment=dev Owner=team-x
+  i-example-005            t3.nano         stopped       (no tags)
 
-# REPLACE WITH REAL OUTPUT from running:
+# Example output (sanitized). To capture real output run:
 #   ./costctl.py list ec2 --missing-tag Application > sample_output/list_ec2_missing_app_<date>.txt
