@@ -32,7 +32,7 @@ You're done when all 25 pass.
 
 ```bash
 # 1. Fork / clone
-git clone <your-fork-url> g<N>-costctl && cd g<N>-costctl
+git clone <your-fork-url> g3-costctl && cd g3-costctl
 
 # 2. Install
 make install-dev                   # or: pip install -r requirements-dev.txt
@@ -271,7 +271,7 @@ Add a `REFLECTIONS.md` to your repo. Sample prompts:
 
 ## Submission checklist (W6 side challenge)
 
-- [ ] Fork → rename to `g<N>-costctl` → clone locally
+- [ ] Fork → rename to `g3-costctl` → clone locally
 - [ ] `make install-dev && make test` shows 10 passed at start
 - [ ] Implement `list` → `pytest tests/test_list.py` all green (7 more pass)
 - [ ] Implement ≥ 2 of (`cost`, `terminate`, `tag`) — `terminate` tests green if you pick it
@@ -298,12 +298,17 @@ MIT — see `LICENSE`.
 ---
 
 ## Team
-
-> Replace before submission:
-
-- <name 1>
-- <name 2>
-- <name 3>
+- **Group:** g3
+- **Members:** 
+   - <Lê Trần Ánh Nhung>
+   - <Nguyễn Thành Đạt>
+   - <Hoàng Minh Hải>
+   - <Phan Lê Thanh Hoàng>
+   - <Từ Phúc Nguyên>
+   - <Nguyễn Văn Toàn>
+   - <Nguyễn Minh Thanh>
+   - <Ngô Thanh Kiên>
+   - <Đoàn Văn An>
 
 ---
 

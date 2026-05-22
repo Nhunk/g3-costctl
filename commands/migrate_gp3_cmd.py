@@ -79,4 +79,49 @@ def run(args):
         args.apply       — bool, default False (dry-run)
         args.volume_id   — optional str, only migrate this volume when --apply
     """
-    raise NotImplementedError("TODO: implement migrate-gp3 — see module docstring")
+    ec2 = boto3.client("ec2")
+
+    # find gp2 volumes
+    resp = ec2.describe_volumes(Filters=[{"Name": "volume-type", "Values": ["gp2"]}])
+    vols = resp.get("Volumes", [])
+    if not vols:
+        print("No gp2 volumes found")
+        return
+
+    savings_per_gb = GP2_PRICE - GP3_PRICE
+    total_savings = 0.0
+
+    if not args.apply:
+        print("gp2 volumes (price delta $0.020/GB-month):")
+        print("-" * 78)
+        for v in vols:
+            vid = v["VolumeId"]
+            size = v["Size"]
+            attachments = v.get("Attachments", [])
+            attached = attachments[0]["InstanceId"] if attachments else "(none)"
+            saving = size * savings_per_gb
+            total_savings += saving
+            print(f"  {vid:<24} {size:>4}GB  attached={attached:<16} $ {saving:.2f}/mo savings")
+        print("-" * 78)
+        print("(dry-run — pass --apply --volume-id <id> to migrate one, or --apply to migrate ALL)")
+        return
+
+    # apply mode
+    to_apply = []
+    if args.volume_id:
+        to_apply = [v for v in vols if v["VolumeId"] == args.volume_id]
+        if not to_apply:
+            print(f"Volume {args.volume_id} not found or not gp2")
+            return
+    else:
+        to_apply = vols
+
+    for v in to_apply:
+        vid = v["VolumeId"]
+        try:
+            ec2.modify_volume(VolumeId=vid, VolumeType="gp3", Iops=3000, Throughput=125)
+            print(f"→ modify_volume issued for {vid} (gp3, 3000 IOPS, 125 MiB/s)")
+        except Exception as e:
+            print(f"AWS error: {e}")
+
+    print("\nVolume(s) entering 'modifying' → 'optimizing' state. App stays online.")

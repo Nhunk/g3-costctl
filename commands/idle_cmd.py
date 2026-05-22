@@ -58,7 +58,25 @@ from statistics import mean
 
 def _avg_cpu(cw, instance_id, hours):
     """Return average CPU% over last N hours, or None if no datapoints."""
-    raise NotImplementedError("TODO: implement _avg_cpu — use get_metric_statistics")
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(hours=hours)
+    resp = cw.get_metric_statistics(
+        Namespace="AWS/EC2",
+        MetricName="CPUUtilization",
+        Dimensions=[{"Name": "InstanceId", "Value": instance_id}],
+        StartTime=start,
+        EndTime=end,
+        Period=3600,
+        Statistics=["Average"],
+    )
+    dps = resp.get("Datapoints", [])
+    if not dps:
+        return None
+    # use the Average field from datapoints
+    avgs = [dp.get("Average") for dp in dps if "Average" in dp]
+    if not avgs:
+        return None
+    return mean(avgs)
 
 
 def run(args):
@@ -68,4 +86,32 @@ def run(args):
         args.threshold  — float, default 5.0 (% CPU)
         args.hours      — int, default 24
     """
-    raise NotImplementedError("TODO: implement run() — see module docstring")
+    ec2 = boto3.client("ec2")
+    cw = boto3.client("cloudwatch")
+
+    # list running instances
+    rows = []
+    paginator = ec2.get_paginator("describe_instances")
+    for page in paginator.paginate(Filters=[{"Name": "instance-state-name", "Values": ["running"]}]):
+        for r in page.get("Reservations", []):
+            for inst in r.get("Instances", []):
+                iid = inst.get("InstanceId")
+                itype = inst.get("InstanceType")
+                tags = {t["Key"]: t["Value"] for t in inst.get("Tags", [])}
+                if tags.get("keep") == "true":
+                    continue
+                avg = _avg_cpu(cw, iid, args.hours)
+                status = f"cpu_{args.hours}h=" + (f"{avg:.2f}%" if avg is not None else "NO DATA")
+                rows.append((iid, itype, status, avg))
+
+    print(f"Scanning running EC2 (excluding keep=true) — threshold {args.threshold}% over {args.hours}h:")
+    print("-" * 78)
+    idle_ids = []
+    for iid, itype, status, avg in rows:
+        line = f"  {iid:<20} {itype:<12} {status}"
+        if avg is not None and avg < args.threshold:
+            line += "  <- IDLE"
+            idle_ids.append(iid)
+        print(line)
+    print("-" * 78)
+    print(f"\nIdle: {len(idle_ids)} instance(s): {idle_ids}")
