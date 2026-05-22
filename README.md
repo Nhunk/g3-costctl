@@ -283,8 +283,8 @@ Add a `REFLECTIONS.md` to your repo. Sample prompts:
 - [ ] Replace `g<N>` placeholders throughout README with your real group number
 - [ ] Add Team section with member names
 - [ ] Tag: `git tag w6-sidechallenge-v1 && git push --tags`
-- [ ] Post link in Slack `#w6-sidechallenge` thread:
-      `G<N> — <repo-url> — implemented: list, cost, terminate (21/25 tests passing)`
+- [x] Post link in Slack `#w6-sidechallenge` thread:
+   `G3 — https://github.com/Nhunk/g3-costctl — implemented: list, cost, terminate, tag, clean, idle, migrate-gp3 (25/25 tests passing)`
 
 Reminder: **OPTIONAL and does NOT count toward W6 score.** Recognition is
 separate (Slack callout / Phase 2 selection / portfolio).
