@@ -1,0 +1,10 @@
+Cost for Application=HealthBot over last 7 days (YYYY-MM-DD → YYYY-MM-DD):
+------------------------------------------------------------
+  Amazon Elastic Compute Cloud - Compute        $    8.42
+  Amazon Relational Database Service             $    5.18
+  Amazon Simple Storage Service                  $    0.18
+  AWS Lambda                                     $    0.02
+------------------------------------------------------------
+  TOTAL                                          $   13.80
+
+# Example output (moto-based sanitized) generated on 2026-05-22

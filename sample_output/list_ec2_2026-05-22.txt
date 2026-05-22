@@ -1,0 +1,7 @@
+EC2 (no filter) — 3 found:
+------------------------------------------------------------------------------
+  i-example-001            t3.micro       running       Application=HealthBot Environment=dev Owner=alice
+  i-example-002            t3.small       running       Application=HealthBot Environment=dev Owner=bob
+  i-example-003            t3.micro       stopped       Application=HealthBot Environment=staging Owner=carol
+
+# Example output (moto-based sanitized) generated on 2026-05-22

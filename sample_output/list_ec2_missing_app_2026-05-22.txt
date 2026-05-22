@@ -1,0 +1,6 @@
+EC2 missing:Application — 2 found:
+------------------------------------------------------------------------------
+  i-example-004            t3.micro        running       Environment=dev Owner=team-x
+  i-example-005            t3.nano         stopped       (no tags)
+
+# Example output (moto-based sanitized) generated on 2026-05-22
