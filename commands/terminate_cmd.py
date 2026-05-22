@@ -58,7 +58,13 @@ from commands._common import confirm
 
 def _terminate_ec2(rid, force):
     """Terminate one EC2 instance after confirmation."""
-    raise NotImplementedError("TODO: implement _terminate_ec2")
+    ec2 = boto3.client("ec2")
+    if not confirm(f"Terminate EC2 {rid}?", force=force):
+        print("Aborted.")
+        return
+    resp = ec2.terminate_instances(InstanceIds=[rid])
+    print(f"Terminated EC2 {rid}")
+    return resp
 
 
 def _terminate_rds(rid, force):
@@ -67,17 +73,40 @@ def _terminate_rds(rid, force):
     Full delete (delete_db_instance) requires a final snapshot decision —
     out of scope for this challenge. Stop is enough to stop billing.
     """
-    raise NotImplementedError("TODO: implement _terminate_rds")
+    rds = boto3.client("rds")
+    if not confirm(f"Stop RDS {rid}?", force=force):
+        print("Aborted.")
+        return
+    resp = rds.stop_db_instance(DBInstanceIdentifier=rid)
+    print(f"Stopped RDS {rid}")
+    return resp
 
 
 def _terminate_s3(rid, force):
     """Delete one S3 bucket — refuse if it has any objects."""
-    raise NotImplementedError("TODO: implement _terminate_s3")
+    s3 = boto3.client("s3")
+    # check object count
+    objs = s3.list_objects_v2(Bucket=rid)
+    keycount = objs.get("KeyCount", 0)
+    if keycount:
+        print(f"Refusing — bucket {rid} has {keycount} object(s). Empty it first.")
+        return
+    if not confirm(f"Delete S3 bucket {rid}?", force=force):
+        print("Aborted.")
+        return
+    s3.delete_bucket(Bucket=rid)
+    print(f"Deleted S3 {rid}")
 
 
 def _terminate_volume(rid, force):
     """Delete one EBS volume after confirmation."""
-    raise NotImplementedError("TODO: implement _terminate_volume")
+    ec2 = boto3.client("ec2")
+    if not confirm(f"Delete volume {rid}?", force=force):
+        print("Aborted.")
+        return
+    resp = ec2.delete_volume(VolumeId=rid)
+    print(f"Deleted volume {rid}")
+    return resp
 
 
 DISPATCH = {
@@ -96,4 +125,11 @@ def run(args):
         args.id     — resource identifier
         args.force  — bool, skip confirm if True
     """
-    raise NotImplementedError("TODO: implement run() — wrap DISPATCH[args.type] with try/except ClientError")
+    try:
+        func = DISPATCH[args.type]
+        # call the per-type handler
+        func(args.id, args.force)
+    except ClientError as e:
+        code = e.response.get("Error", {}).get("Code", "Unknown")
+        msg = e.response.get("Error", {}).get("Message", "")
+        print(f"AWS error [{code}]: {msg}")
